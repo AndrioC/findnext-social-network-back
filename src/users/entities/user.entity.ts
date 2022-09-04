@@ -1,21 +1,24 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-  CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
-export class Place {
+export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  title: string;
+  email: string;
 
   @Column()
-  description: string;
+  name: string;
+
+  @Column()
+  password: string;
 
   @CreateDateColumn()
   created_at: Date;
