@@ -6,8 +6,8 @@ import {
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { UsersService } from '../../users/services/users.service';
 import { promisify } from 'util';
-import { User } from '../../users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
+import { SignInUserInput } from '../dtos/signin-user.input';
 
 const scrypt = promisify(_scrypt);
 
@@ -52,11 +52,13 @@ export class AuthService {
     return user;
   }
 
-  async signin(user: User) {
+  async signin(signInUserInput: SignInUserInput) {
+    const [user] = await this.usersService.find(signInUserInput.email);
     const payload = { sub: user.id, email: user.email };
 
     return {
       token: this.jwtService.sign(payload),
+      user,
     };
   }
 }
