@@ -26,10 +26,14 @@ type Query {
 }
 
 type Mutation {
+  uploadImage(image: Upload!): Boolean!
   createUser(createUser: CreateUserDto!): User!
   signin(signInUserInput: SignInUserInput!): SignInResponse!
   signup(signUpUserInput: SignUpUserInput!): User!
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
 
 input CreateUserDto {
   email: String!
