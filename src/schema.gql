@@ -26,7 +26,7 @@ type Query {
 }
 
 type Mutation {
-  uploadImage(image: Upload!): Boolean!
+  uploadImage(image: [Upload!]!): Boolean!
   createUser(createUser: CreateUserDto!): User!
   signin(signInUserInput: SignInUserInput!): SignInResponse!
   signup(signUpUserInput: SignUpUserInput!): User!
