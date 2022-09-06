@@ -16,6 +16,15 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Place {
+  id: Float!
+  title: String!
+  description: String!
+  created_at: DateTime!
+  updated_at: DateTime!
+  user: User!
+}
+
 type CreatePlaceResponse {
   title: String!
   description: String!
@@ -28,6 +37,7 @@ type SignInResponse {
 }
 
 type Query {
+  listAllPlaces: [Place!]!
   listAll: [User!]!
 }
 
@@ -35,6 +45,7 @@ type Mutation {
   createPlace(createPlaceInput: CreatePlaceInput!): CreatePlaceResponse!
   uploadImage(image: [Upload!]!): Boolean!
   createUser(createUser: CreateUserDto!): User!
+  updateUser(id: Float!, data: UpdateUserInput!): User!
   signin(signInUserInput: SignInUserInput!): SignInResponse!
   signup(signUpUserInput: SignUpUserInput!): User!
 }
@@ -50,6 +61,12 @@ scalar Upload
 input CreateUserDto {
   email: String!
   name: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  name: String!
+  email: String!
   password: String!
 }
 

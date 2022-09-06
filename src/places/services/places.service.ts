@@ -22,7 +22,7 @@ export class PlacesService {
     if (!id) {
       return null;
     }
-    return this.repo.findOne({ where: { id } });
+    return this.repo.find({ where: { id } });
   }
 
   async update(id: number, attrs: Partial<Place>) {
