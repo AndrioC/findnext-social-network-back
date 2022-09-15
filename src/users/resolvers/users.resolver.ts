@@ -1,8 +1,9 @@
-import { UseGuards } from '@nestjs/common';
+import { HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { createWriteStream } from 'fs';
 import { JwtAuthGuard } from '../../auth/guards/auth-jwt-gql.guard';
 import { CreateUserDto } from '../dtos/create-user.dto';
-import { UpdateUserInput } from '../dtos/update-user.dto';
+import { UpdateUserInput } from '../dtos/update-user-input.dto';
 import { User } from '../entities/user.entity';
 import { UsersService } from '../services/users.service';
 
@@ -27,7 +28,38 @@ export class UsersResolver {
     @Args('id') id: number,
     @Args('data') data: UpdateUserInput,
   ): Promise<User> {
-    const user = this.usersService.update(id, data);
+    const { createReadStream, filename } = await data.avatar_image;
+    const {
+      createReadStream: createReadStreamBackImage,
+      filename: filenameBackImage,
+    } = await data.background_image;
+
+    if (filename) {
+      new Promise(async (resolve) =>
+        createReadStream()
+          .pipe(createWriteStream(`./src/uploads/${filename}`))
+          .on('finish', () => resolve(true))
+          .on('error', () => {
+            new HttpException('Could not save image', HttpStatus.BAD_REQUEST);
+          }),
+      );
+    }
+
+    if (filenameBackImage) {
+      new Promise(async (resolve) =>
+        createReadStreamBackImage()
+          .pipe(createWriteStream(`./src/uploads/${filenameBackImage}`))
+          .on('finish', () => resolve(true))
+          .on('error', () => {
+            new HttpException('Could not save image', HttpStatus.BAD_REQUEST);
+          }),
+      );
+    }
+    const user = this.usersService.update(id, {
+      ...data,
+      avatar_image: filename,
+      background_image: filenameBackImage,
+    });
 
     return user;
   }

@@ -28,6 +28,14 @@ export class User {
   @Field()
   password: string;
 
+  @Column({ nullable: true })
+  @Field()
+  avatar_image: string;
+
+  @Column({ nullable: true })
+  @Field()
+  background_image: string;
+
   @CreateDateColumn()
   @Field()
   created_at: Date;

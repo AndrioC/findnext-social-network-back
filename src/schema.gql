@@ -7,6 +7,8 @@ type User {
   email: String!
   name: String!
   password: String!
+  avatar_image: String!
+  background_image: String!
   created_at: DateTime!
   updated_at: DateTime!
 }
@@ -18,16 +20,18 @@ scalar DateTime
 
 type Place {
   id: Float!
-  title: String!
   description: String!
+  location: String!
+  image: String!
   created_at: DateTime!
   updated_at: DateTime!
   user: User!
 }
 
 type CreatePlaceResponse {
-  title: String!
   description: String!
+  location: String!
+  image: String!
   user: User!
 }
 
@@ -43,7 +47,7 @@ type Query {
 
 type Mutation {
   createPlace(createPlaceInput: CreatePlaceInput!): CreatePlaceResponse!
-  uploadImage(image: [Upload!]!): Boolean!
+  uploadImage(image: Upload!): Boolean!
   createUser(createUser: CreateUserDto!): User!
   updateUser(id: Float!, data: UpdateUserInput!): User!
   signin(signInUserInput: SignInUserInput!): SignInResponse!
@@ -51,8 +55,9 @@ type Mutation {
 }
 
 input CreatePlaceInput {
-  title: String!
   description: String!
+  location: String!
+  image: Upload!
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -65,9 +70,11 @@ input CreateUserDto {
 }
 
 input UpdateUserInput {
-  name: String!
-  email: String!
-  password: String!
+  avatar_image: Upload
+  background_image: Upload
+  name: String
+  email: String
+  password: String
 }
 
 input SignInUserInput {

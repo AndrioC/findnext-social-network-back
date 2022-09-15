@@ -1,5 +1,6 @@
-import { UseGuards } from '@nestjs/common';
+import { HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import { createWriteStream } from 'fs';
 import { JwtAuthGuard } from '../../auth/guards/auth-jwt-gql.guard';
 import { CurrentUser } from '../../users/decorators/current-user.decorator';
 import { User } from '../../users/entities/user.entity';
@@ -14,11 +15,26 @@ export class PlacesResolver {
 
   @Mutation(() => CreatePlaceResponse)
   @UseGuards(JwtAuthGuard)
-  createPlace(
+  async createPlace(
     @Args('createPlaceInput') createPlaceInput: CreatePlaceInput,
     @CurrentUser() user: User,
   ) {
-    return this.placesService.create({ ...createPlaceInput, user });
+    const { createReadStream, filename } = await createPlaceInput.image;
+
+    new Promise(async (resolve) =>
+      createReadStream()
+        .pipe(createWriteStream(`./src/uploads/${filename}`))
+        .on('finish', () => resolve(true))
+        .on('error', () => {
+          new HttpException('Could not save image', HttpStatus.BAD_REQUEST);
+        }),
+    );
+
+    return this.placesService.create({
+      ...createPlaceInput,
+      user,
+      image: filename,
+    });
   }
 
   @Query(() => [Place])

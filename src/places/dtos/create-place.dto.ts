@@ -3,10 +3,13 @@ import { User } from '../../users/entities/user.entity';
 
 export class CreatePlaceDto {
   @IsString()
-  title: string;
+  description: string;
 
   @IsString()
-  description: string;
+  location: string;
+
+  @IsString()
+  image: string;
 
   user: User;
 }

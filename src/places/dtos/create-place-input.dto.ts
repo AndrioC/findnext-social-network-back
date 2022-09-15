@@ -1,13 +1,27 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { IsString } from 'class-validator';
 
+import * as GraphQLUpload from 'graphql-upload/GraphQLUpload.js';
+
+import { Stream } from 'stream';
+
+interface FileUpload {
+  filename: string;
+  mimetype: string;
+  encoding: string;
+  createReadStream: () => Stream;
+}
+
 @InputType()
 export class CreatePlaceInput {
   @IsString()
   @Field()
-  title: string;
+  description: string;
 
   @IsString()
   @Field()
-  description: string;
+  location: string;
+
+  @Field(() => GraphQLUpload)
+  image: Promise<FileUpload>;
 }

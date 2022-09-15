@@ -18,11 +18,15 @@ export class Place {
 
   @Column()
   @Field()
-  title: string;
+  description: string;
 
   @Column()
   @Field()
-  description: string;
+  location: string;
+
+  @Column()
+  @Field()
+  image: string;
 
   @CreateDateColumn()
   @Field()

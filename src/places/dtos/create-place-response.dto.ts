@@ -4,10 +4,13 @@ import { User } from '../../users/entities/user.entity';
 @ObjectType()
 export class CreatePlaceResponse {
   @Field()
-  title: string;
+  description: string;
 
   @Field()
-  description: string;
+  location: string;
+
+  @Field(() => String)
+  image: string;
 
   @Field(() => User)
   user: User;
