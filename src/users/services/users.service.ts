@@ -1,32 +1,31 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import RepoService from '../../repo.service';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { User } from '../entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) private repo: Repository<User>) {}
+  constructor(private readonly repoService: RepoService) {}
 
   create(email: string, name: string, password: string) {
-    const user = this.repo.create({ email, name, password });
+    const user = this.repoService.userRepo.create({ email, name, password });
 
-    return this.repo.save(user);
+    return this.repoService.userRepo.save(user);
   }
 
   findOne(id: number) {
     if (!id) {
       return null;
     }
-    return this.repo.findOne({ where: { id } });
+    return this.repoService.userRepo.findOne({ where: { id } });
   }
 
   find(email: string) {
-    return this.repo.find({ where: { email } });
+    return this.repoService.userRepo.find({ where: { email } });
   }
 
   findAll() {
-    return this.repo.find();
+    return this.repoService.userRepo.find();
   }
 
   async update(id: number, attrs: Partial<UpdateUserDto>): Promise<User> {
@@ -37,7 +36,7 @@ export class UsersService {
     }
 
     Object.assign(user, attrs);
-    return this.repo.save(user);
+    return this.repoService.userRepo.save(user);
   }
 
   async remove(id: number) {
@@ -47,6 +46,6 @@ export class UsersService {
       throw new NotFoundException('user not found!');
     }
 
-    return this.repo.remove(user);
+    return this.repoService.userRepo.remove(user);
   }
 }

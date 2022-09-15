@@ -1,28 +1,29 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import RepoService from '../../repo.service';
 import { CreatePlaceDto } from '../dtos/create-place.dto';
 import { Place } from '../entities/place.entity';
 
 @Injectable()
 export class PlacesService {
-  constructor(@InjectRepository(Place) private repo: Repository<Place>) {}
+  constructor(private readonly repoService: RepoService) {}
 
   create(placeDto: CreatePlaceDto) {
-    const place = this.repo.create(placeDto);
+    const place = this.repoService.placeRepo.create(placeDto);
 
-    return this.repo.save(place);
+    return this.repoService.placeRepo.save(place);
   }
 
-  findAll() {
-    return this.repo.find();
+  async findAll() {
+    const teste = await this.repoService.placeRepo.find();
+    console.log(teste);
+    return teste;
   }
 
   findOne(id: number) {
     if (!id) {
       return null;
     }
-    return this.repo.find({ where: { id } });
+    return this.repoService.placeRepo.find({ where: { id } });
   }
 
   async update(id: number, attrs: Partial<Place>) {
@@ -33,7 +34,7 @@ export class PlacesService {
     }
 
     Object.assign(place, attrs);
-    return this.repo.save(place);
+    return this.repoService.placeRepo.save(place);
   }
 
   async remove(id: number) {
@@ -43,6 +44,13 @@ export class PlacesService {
       throw new NotFoundException('place not found!');
     }
 
-    return this.repo.remove(place);
+    return this.repoService.placeRepo.remove(place);
+  }
+
+  async findUser(id: number) {
+    if (!id) {
+      return null;
+    }
+    return this.repoService.userRepo.findOne({ where: { id } });
   }
 }

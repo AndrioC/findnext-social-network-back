@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { createWriteStream } from 'fs';
 import { JwtAuthGuard } from '../../auth/guards/auth-jwt-gql.guard';
+import { CurrentUser } from '../decorators/current-user.decorator';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserInput } from '../dtos/update-user-input.dto';
 import { User } from '../entities/user.entity';
@@ -17,13 +18,17 @@ export class UsersResolver {
     return this.usersService.findAll();
   }
 
+  @Query(() => User)
+  listUserData(@CurrentUser() user: User) {
+    return this.usersService.findOne(user.id);
+  }
+
   @Mutation(() => User)
   createUser(@Args('createUser') user: CreateUserDto) {
     return this.usersService.create(user.email, user.name, user.password);
   }
 
   @Mutation(() => User)
-  @UseGuards(JwtAuthGuard)
   async updateUser(
     @Args('id') id: number,
     @Args('data') data: UpdateUserInput,

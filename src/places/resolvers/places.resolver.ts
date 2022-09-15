@@ -1,5 +1,12 @@
 import { HttpException, HttpStatus, UseGuards } from '@nestjs/common';
-import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Resolver,
+  Query,
+  Parent,
+  ResolveField,
+} from '@nestjs/graphql';
 import { createWriteStream } from 'fs';
 import { JwtAuthGuard } from '../../auth/guards/auth-jwt-gql.guard';
 import { CurrentUser } from '../../users/decorators/current-user.decorator';
@@ -9,12 +16,12 @@ import { CreatePlaceResponse } from '../dtos/create-place-response.dto';
 import { Place } from '../entities/place.entity';
 import { PlacesService } from '../services/places.service';
 
-@Resolver()
+@Resolver(Place)
+@UseGuards(JwtAuthGuard)
 export class PlacesResolver {
   constructor(private placesService: PlacesService) {}
 
   @Mutation(() => CreatePlaceResponse)
-  @UseGuards(JwtAuthGuard)
   async createPlace(
     @Args('createPlaceInput') createPlaceInput: CreatePlaceInput,
     @CurrentUser() user: User,
@@ -38,8 +45,13 @@ export class PlacesResolver {
   }
 
   @Query(() => [Place])
-  @UseGuards(JwtAuthGuard)
   listAllPlaces() {
     return this.placesService.findAll();
+  }
+
+  @ResolveField(() => User)
+  public async userName(@Parent() parent: Place): Promise<User> {
+    console.log(parent);
+    return this.placesService.findUser(parent.userId);
   }
 }

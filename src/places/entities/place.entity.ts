@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
@@ -36,9 +37,14 @@ export class Place {
   @Field()
   updated_at: Date;
 
+  @Field()
+  @Column({ name: 'user_id' })
+  userId: number;
+
   @ManyToOne(() => User, (user) => user.places, {
     nullable: false,
   })
-  @Field({ nullable: false })
+  @JoinColumn({ name: 'user_id' })
+  @Field(() => User)
   user: User;
 }

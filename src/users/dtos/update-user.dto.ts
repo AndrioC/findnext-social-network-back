@@ -8,7 +8,7 @@ export class UpdateUserDto {
   background_image: string;
 
   @IsString()
-  name?: string;
+  name: string;
 
   @IsEmail()
   email: string;

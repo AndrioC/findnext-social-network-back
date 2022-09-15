@@ -1,15 +1,19 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PlacesModule } from './places/places.module';
-import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { PlacesResolver } from './places/resolvers/places.resolver';
+import RepoModule from './repo.module';
+import { UsersResolver } from './users/resolvers/users.resolver';
+
+const gqlImports = [PlacesResolver, UsersResolver];
 
 @Module({
   imports: [
+    ...gqlImports,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       driver: ApolloDriver,
@@ -25,8 +29,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
       entities: [__dirname + '/**/*.entity{.js,.ts}'],
       synchronize: true,
     }),
-    PlacesModule,
-    UsersModule,
+    RepoModule,
     AuthModule,
   ],
 })
