@@ -9,14 +9,13 @@ import {
 } from '@nestjs/graphql';
 import { createWriteStream } from 'fs';
 import { JwtAuthGuard } from '../../auth/guards/auth-jwt-gql.guard';
-import { CurrentUser } from '../../users/decorators/current-user.decorator';
 import { User } from '../../users/entities/user.entity';
 import { CreatePlaceInput } from '../dtos/create-place-input.dto';
 import { CreatePlaceResponse } from '../dtos/create-place-response.dto';
 import { Place } from '../entities/place.entity';
 import { PlacesService } from '../services/places.service';
 
-@Resolver(Place)
+@Resolver(() => Place)
 @UseGuards(JwtAuthGuard)
 export class PlacesResolver {
   constructor(private placesService: PlacesService) {}
@@ -24,9 +23,10 @@ export class PlacesResolver {
   @Mutation(() => CreatePlaceResponse)
   async createPlace(
     @Args('createPlaceInput') createPlaceInput: CreatePlaceInput,
-    @CurrentUser() user: User,
   ) {
     const { createReadStream, filename } = await createPlaceInput.image;
+
+    const user = await this.placesService.findUser(createPlaceInput.userId);
 
     new Promise(async (resolve) =>
       createReadStream()
@@ -37,11 +37,12 @@ export class PlacesResolver {
         }),
     );
 
-    return this.placesService.create({
+    const created = await this.placesService.create({
       ...createPlaceInput,
-      user,
       image: filename,
     });
+
+    return { ...created, user };
   }
 
   @Query(() => [Place])
@@ -51,6 +52,6 @@ export class PlacesResolver {
 
   @ResolveField(() => User)
   public async userName(@Parent() parent: Place): Promise<User> {
-    return this.placesService.findUser(parent.userId);
+    return await this.placesService.findUser(parent.userId);
   }
 }

@@ -1,7 +1,9 @@
-import { IsString } from 'class-validator';
-import { User } from '../../users/entities/user.entity';
+import { IsNumber, IsString } from 'class-validator';
 
 export class CreatePlaceDto {
+  @IsNumber()
+  userId: number;
+
   @IsString()
   description: string;
 
@@ -10,6 +12,4 @@ export class CreatePlaceDto {
 
   @IsString()
   image: string;
-
-  user: User;
 }

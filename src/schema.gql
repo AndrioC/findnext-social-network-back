@@ -45,7 +45,7 @@ type SignInResponse {
 type Query {
   listAllPlaces: [Place!]!
   listAll: [User!]!
-  listUserData: User!
+  listUserData(id: Float!): User!
 }
 
 type Mutation {
@@ -58,6 +58,7 @@ type Mutation {
 }
 
 input CreatePlaceInput {
+  userId: Float!
   description: String!
   location: String!
   image: Upload!

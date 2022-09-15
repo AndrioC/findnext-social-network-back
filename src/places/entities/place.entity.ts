@@ -41,10 +41,12 @@ export class Place {
   @Column({ name: 'user_id' })
   userId: number;
 
-  @ManyToOne(() => User, (user) => user.places, {
+  @Field(() => User)
+  user: Promise<User>;
+
+  @ManyToOne(() => User, (user) => user.placeRelation, {
     nullable: false,
   })
   @JoinColumn({ name: 'user_id' })
-  @Field(() => User)
-  user: User;
+  userRelation: Promise<User>;
 }

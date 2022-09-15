@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 import * as GraphQLUpload from 'graphql-upload/GraphQLUpload.js';
 
@@ -14,6 +14,10 @@ interface FileUpload {
 
 @InputType()
 export class CreatePlaceInput {
+  @IsNumber()
+  @Field()
+  userId: number;
+
   @IsString()
   @Field()
   description: string;

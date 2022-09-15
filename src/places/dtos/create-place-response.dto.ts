@@ -12,6 +12,6 @@ export class CreatePlaceResponse {
   @Field(() => String)
   image: string;
 
-  @Field(() => User)
+  @Field()
   user: User;
 }

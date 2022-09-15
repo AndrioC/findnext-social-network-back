@@ -44,6 +44,6 @@ export class User {
   @Field()
   updated_at: Date;
 
-  @OneToMany(() => Place, (place) => place.user)
-  places: Place[];
+  @OneToMany(() => Place, (place) => place.userRelation)
+  placeRelation: Promise<Place[]>;
 }
