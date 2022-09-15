@@ -51,7 +51,6 @@ export class PlacesResolver {
 
   @ResolveField(() => User)
   public async userName(@Parent() parent: Place): Promise<User> {
-    console.log(parent);
     return this.placesService.findUser(parent.userId);
   }
 }

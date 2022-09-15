@@ -14,9 +14,7 @@ export class PlacesService {
   }
 
   async findAll() {
-    const teste = await this.repoService.placeRepo.find();
-    console.log(teste);
-    return teste;
+    return await this.repoService.placeRepo.find();
   }
 
   findOne(id: number) {
