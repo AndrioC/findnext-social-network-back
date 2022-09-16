@@ -12,6 +12,10 @@ phases:
     commands:
       - echo Starting build on `date`
       - npm run build
+  post_build:
+    commands:
+      - run app
+      - npm run start:prod
 artifacts:
   files:
     - '**/*'
