@@ -9,8 +9,8 @@ type Place {
   image: String!
   created_at: DateTime!
   updated_at: DateTime!
-  userId: Float!
   user: User!
+  url_image: String!
   userName: User!
 }
 
@@ -28,12 +28,15 @@ type User {
   background_image: String!
   created_at: DateTime!
   updated_at: DateTime!
+  url_avatar_image: String!
+  url_background_image: String!
 }
 
 type CreatePlaceResponse {
   description: String!
   location: String!
   image: String!
+  urlImage: String!
   user: User!
 }
 

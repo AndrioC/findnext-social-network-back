@@ -1,5 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { Expose } from 'class-transformer';
 import {
+  AfterLoad,
   Column,
   CreateDateColumn,
   Entity,
@@ -46,4 +48,18 @@ export class User {
 
   @OneToMany(() => Place, (place) => place.userRelation)
   placeRelation: Promise<Place[]>;
+
+  @Field()
+  @Expose()
+  url_avatar_image: string;
+
+  @Field()
+  @Expose()
+  url_background_image: string;
+
+  @AfterLoad()
+  generateImageUrl() {
+    this.url_avatar_image = `https://${process.env.USER_IMAGES}.s3.us-east-1.amazonaws.com/${this.avatar_image}`;
+    this.url_background_image = `https://${process.env.USER_IMAGES}.s3.us-east-1.amazonaws.com/${this.background_image}`;
+  }
 }

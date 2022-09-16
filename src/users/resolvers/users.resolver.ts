@@ -1,16 +1,22 @@
-import { HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { createWriteStream } from 'fs';
 import { JwtAuthGuard } from '../../auth/guards/auth-jwt-gql.guard';
+import { S3Service } from '../../s3/services/s3.service';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserInput } from '../dtos/update-user-input.dto';
 import { User } from '../entities/user.entity';
 import { UsersService } from '../services/users.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Resolver(() => User)
 @UseGuards(JwtAuthGuard)
 export class UsersResolver {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private s3Service: S3Service,
+    private configService: ConfigService,
+  ) {}
 
   @Query(() => [User])
   listAll() {
@@ -32,37 +38,41 @@ export class UsersResolver {
     @Args('id') id: number,
     @Args('data') data: UpdateUserInput,
   ): Promise<User> {
-    const { createReadStream, filename } = await data.avatar_image;
+    const { createReadStream, filename, mimetype } = await data.avatar_image;
     const {
       createReadStream: createReadStreamBackImage,
       filename: filenameBackImage,
     } = await data.background_image;
 
+    const bucketName = this.configService.get<string>('USER_IMAGES');
+    const hashProfileFilename = `${uuidv4()}-profile`;
+    const hashProfileBackgroundImage = `${uuidv4()}-back-image`;
+
     if (filename) {
-      new Promise(async (resolve) =>
-        createReadStream()
-          .pipe(createWriteStream(`./src/uploads/${filename}`))
-          .on('finish', () => resolve(true))
-          .on('error', () => {
-            new HttpException('Could not save image', HttpStatus.BAD_REQUEST);
-          }),
-      );
+      const params = {
+        Bucket: bucketName,
+        Key: hashProfileFilename,
+        Body: createReadStream(),
+        ContentType: mimetype,
+      };
+
+      await this.s3Service.uploadFile({ params });
     }
 
     if (filenameBackImage) {
-      new Promise(async (resolve) =>
-        createReadStreamBackImage()
-          .pipe(createWriteStream(`./src/uploads/${filenameBackImage}`))
-          .on('finish', () => resolve(true))
-          .on('error', () => {
-            new HttpException('Could not save image', HttpStatus.BAD_REQUEST);
-          }),
-      );
+      const params = {
+        Bucket: bucketName,
+        Key: hashProfileBackgroundImage,
+        Body: createReadStreamBackImage(),
+        ContentType: mimetype,
+      };
+
+      await this.s3Service.uploadFile({ params });
     }
     const user = this.usersService.update(id, {
       ...data,
-      avatar_image: filename,
-      background_image: filenameBackImage,
+      avatar_image: hashProfileFilename,
+      background_image: hashProfileBackgroundImage,
     });
 
     return user;

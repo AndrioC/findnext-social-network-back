@@ -8,6 +8,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { PlacesResolver } from './places/resolvers/places.resolver';
 import RepoModule from './repo.module';
 import { UsersResolver } from './users/resolvers/users.resolver';
+import { S3Module } from './s3/s3.module';
 
 const gqlImports = [PlacesResolver, UsersResolver];
 
@@ -18,7 +19,7 @@ const gqlImports = [PlacesResolver, UsersResolver];
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       driver: ApolloDriver,
     }),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -30,6 +31,7 @@ const gqlImports = [PlacesResolver, UsersResolver];
       synchronize: true,
     }),
     RepoModule,
+    S3Module,
     AuthModule,
   ],
 })

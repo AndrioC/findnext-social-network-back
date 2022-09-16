@@ -1,4 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { Expose } from 'class-transformer';
 import {
   Column,
   Entity,
@@ -7,6 +8,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  AfterLoad,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
@@ -37,7 +39,6 @@ export class Place {
   @Field()
   updated_at: Date;
 
-  @Field()
   @Column({ name: 'user_id' })
   userId: number;
 
@@ -49,4 +50,13 @@ export class Place {
   })
   @JoinColumn({ name: 'user_id' })
   userRelation: Promise<User>;
+
+  @Field()
+  @Expose()
+  url_image: string;
+
+  @AfterLoad()
+  generateImageUrl() {
+    this.url_image = `https://${process.env.POST_IMAGES}.s3.us-east-1.amazonaws.com/${this.image}`;
+  }
 }

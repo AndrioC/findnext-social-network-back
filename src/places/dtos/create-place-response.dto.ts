@@ -13,5 +13,8 @@ export class CreatePlaceResponse {
   image: string;
 
   @Field()
+  urlImage: string;
+
+  @Field()
   user: User;
 }
