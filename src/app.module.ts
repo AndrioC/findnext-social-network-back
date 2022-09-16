@@ -9,6 +9,8 @@ import { PlacesResolver } from './places/resolvers/places.resolver';
 import RepoModule from './repo.module';
 import { UsersResolver } from './users/resolvers/users.resolver';
 import { S3Module } from './s3/s3.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 const gqlImports = [PlacesResolver, UsersResolver];
 
@@ -34,5 +36,7 @@ const gqlImports = [PlacesResolver, UsersResolver];
     S3Module,
     AuthModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
