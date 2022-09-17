@@ -30,7 +30,6 @@ const gqlImports = [PlacesResolver, UsersResolver];
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       entities: [__dirname + '/**/*.entity{.js,.ts}'],
-      synchronize: true,
     }),
     RepoModule,
     S3Module,
