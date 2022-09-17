@@ -38,17 +38,15 @@ export class UsersResolver {
     @Args('id') id: number,
     @Args('data') data: UpdateUserInput,
   ): Promise<User> {
-    const { createReadStream, filename, mimetype } = await data.avatar_image;
-    const {
-      createReadStream: createReadStreamBackImage,
-      filename: filenameBackImage,
-    } = await data.background_image;
+    const avatarImage = await data.avatar_image;
+    const backgroundImage = await data.background_image;
 
     const bucketName = this.configService.get<string>('USER_IMAGES');
     const hashProfileFilename = `${uuidv4()}-profile`;
     const hashProfileBackgroundImage = `${uuidv4()}-back-image`;
 
-    if (filename) {
+    if (avatarImage) {
+      const { createReadStream, mimetype } = avatarImage;
       const params = {
         Bucket: bucketName,
         Key: hashProfileFilename,
@@ -59,16 +57,18 @@ export class UsersResolver {
       await this.s3Service.uploadFile({ params });
     }
 
-    if (filenameBackImage) {
+    if (backgroundImage) {
+      const { createReadStream, mimetype } = backgroundImage;
       const params = {
         Bucket: bucketName,
         Key: hashProfileBackgroundImage,
-        Body: createReadStreamBackImage(),
+        Body: createReadStream(),
         ContentType: mimetype,
       };
 
       await this.s3Service.uploadFile({ params });
     }
+
     const user = this.usersService.update(id, {
       ...data,
       avatar_image: hashProfileFilename,
