@@ -59,7 +59,11 @@ export class User {
 
   @AfterLoad()
   generateImageUrl() {
-    this.url_avatar_image = `https://${process.env.USER_IMAGES}.s3.us-east-1.amazonaws.com/${this.avatar_image}`;
-    this.url_background_image = `https://${process.env.USER_IMAGES}.s3.us-east-1.amazonaws.com/${this.background_image}`;
+    this.url_avatar_image = this.avatar_image
+      ? `https://${process.env.USER_IMAGES}.s3.us-east-1.amazonaws.com/${this.avatar_image}`
+      : null;
+    this.url_background_image = this.background_image
+      ? `https://${process.env.USER_IMAGES}.s3.us-east-1.amazonaws.com/${this.background_image}`
+      : null;
   }
 }
