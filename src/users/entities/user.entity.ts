@@ -30,11 +30,11 @@ export class User {
   @Field()
   password: string;
 
-  @Column({ nullable: true })
+  @Column()
   @Field()
   avatar_image: string;
 
-  @Column({ nullable: true })
+  @Column()
   @Field()
   background_image: string;
 

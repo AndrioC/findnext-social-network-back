@@ -42,11 +42,12 @@ export class UsersResolver {
     const backgroundImage = await data.background_image;
 
     const bucketName = this.configService.get<string>('USER_IMAGES');
-    const hashProfileFilename = `${uuidv4()}-profile`;
-    const hashProfileBackgroundImage = `${uuidv4()}-back-image`;
+    let hashProfileFilename = null;
+    let hashProfileBackgroundImage = null;
 
     if (avatarImage) {
       const { createReadStream, mimetype } = avatarImage;
+      hashProfileFilename = `${uuidv4()}-profile`;
       const params = {
         Bucket: bucketName,
         Key: hashProfileFilename,
@@ -59,6 +60,7 @@ export class UsersResolver {
 
     if (backgroundImage) {
       const { createReadStream, mimetype } = backgroundImage;
+      hashProfileBackgroundImage = `${uuidv4()}-back-image`;
       const params = {
         Bucket: bucketName,
         Key: hashProfileBackgroundImage,
@@ -71,7 +73,7 @@ export class UsersResolver {
 
     const user = this.usersService.update(id, {
       ...data,
-      avatar_image: hashProfileFilename,
+      avatar_image: avatarImage && hashProfileFilename,
       background_image: hashProfileBackgroundImage,
     });
 

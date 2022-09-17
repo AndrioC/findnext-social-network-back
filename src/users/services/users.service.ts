@@ -12,7 +12,13 @@ export class UsersService {
   constructor(private readonly repoService: RepoService) {}
 
   create(email: string, name: string, password: string) {
-    const user = this.repoService.userRepo.create({ email, name, password });
+    const user = this.repoService.userRepo.create({
+      email,
+      name,
+      password,
+      avatar_image: 'profile',
+      background_image: 'placeholder',
+    });
 
     return this.repoService.userRepo.save(user);
   }
@@ -47,6 +53,14 @@ export class UsersService {
       const result = salt + '.' + hash.toString('hex');
 
       attrs.password = result;
+    }
+
+    if (attrs.avatar_image === null) {
+      attrs.avatar_image = user.avatar_image;
+    }
+
+    if (attrs.background_image === null) {
+      attrs.background_image = user.background_image;
     }
 
     Object.assign(user, attrs);
