@@ -14,7 +14,9 @@ export class PlacesService {
   }
 
   async findAll() {
-    return await this.repoService.placeRepo.find();
+    return await this.repoService.placeRepo.find({
+      order: { created_at: 'DESC' },
+    });
   }
 
   findOne(id: number) {
